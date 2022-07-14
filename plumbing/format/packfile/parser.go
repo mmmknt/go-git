@@ -234,6 +234,16 @@ func (p *Parser) indexObjects() error {
 				return err
 			}
 
+			// for test: https://github.com/go-git/go-git/pull/485/files
+			// move children of placeholder parent into actual parent in case this was
+			// a non-external delta reference
+			if placeholder, ok := p.oiByHash[sha1]; ok {
+				ota.Children = placeholder.Children
+				for _, c := range ota.Children {
+					c.Parent = ota
+				}
+			}
+
 			ota.SHA1 = sha1
 			p.oiByHash[ota.SHA1] = ota
 		}
